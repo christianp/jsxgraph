@@ -3140,6 +3140,7 @@ define([
                 dx = Type.evaluate(this.attr.keyboard.dx) / this.unitX,
                 dy = Type.evaluate(this.attr.keyboard.dy) / this.unitY,
                 doZoom = false,
+                preventDefault = true,
                 dir, actPos;
 
             if (!this.attr.keyboard.enabled || id_node === '') {
@@ -3168,8 +3169,11 @@ define([
                     this.clickLeftArrow();
                 } else if (evt.keyCode === 39) {    // right
                     this.clickRightArrow();
+                } else {
+                    preventDefault = false;
                 }
             } else {
+                preventDefault = false;
                 if (evt.keyCode === 38) {           // up
                     dir = [0, dy];
                 } else if (evt.keyCode === 40) {    // down
@@ -3182,10 +3186,14 @@ define([
 
                 } else if (doZoom && evt.key === '+') {   // +
                     this.zoomIn();
+                    preventDefault = true;
                 } else if (doZoom && evt.key === '-') {   // -
                     this.zoomOut();
+                    preventDefault = true;
                 } else if (doZoom && evt.key === 'o') {    // o
                     this.zoom100();
+                    preventDefault = true;
+                } else {
                 }
                 if (dir && el.isDraggable &&
                         el.visPropCalc.visible &&
@@ -3196,6 +3204,7 @@ define([
                         !Type.evaluate(el.visProp.fixed)
                     ) {
 
+                    preventDefault = true;
                     if (Type.exists(el.coords)) {
                         dir[0] += actPos[0];
                         dir[1] += actPos[1];
@@ -3207,6 +3216,10 @@ define([
             }
 
             this.update();
+
+            if(preventDefault) {
+                evt.preventDefault();
+            }
 
             return true;
         },
